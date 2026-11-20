@@ -19,9 +19,16 @@ def db(tmp_path):
     from marketpilot.app import seed
     from marketpilot.config import reset_settings_cache
 
-    url = f"sqlite:///{tmp_path / 'test.db'}"
+    # Set MP_TEST_DATABASE_URL=postgresql+psycopg://... to run the suite against PostgreSQL.
+    url = os.environ.get("MP_TEST_DATABASE_URL") or f"sqlite:///{tmp_path / 'test.db'}"
     os.environ["DATABASE_URL"] = url
     reset_settings_cache()
+    if url.startswith("postgresql"):
+        from sqlalchemy import create_engine
+
+        eng = create_engine(url)
+        dbmod.Base.metadata.drop_all(eng)
+        eng.dispose()
     dbmod.init_engine(url)
     with dbmod.session_scope() as s:
         seed(s)

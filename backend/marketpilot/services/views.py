@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from ..analysis.performance import risk_adjusted_score, summarize
 from ..db import Decision, EquitySnapshot, Experiment, Fill, Order, PendingSetup, Trade
 from ..paper.accounting import equity, open_positions
+from ..risk.manager import RiskConfig
 
 
 def trade_to_dict(t: Trade) -> dict[str, Any]:
@@ -85,7 +86,8 @@ def experiment_summary(s: Session, exp: Experiment, with_curve: bool = False) ->
     armed = s.execute(select(PendingSetup).where(PendingSetup.experiment_id == exp.id, PendingSetup.status == "armed")).scalars().all()
     out = {
         "id": exp.id, "name": exp.name, "strategy_key": exp.strategy_key, "strategy_version": exp.strategy_version,
-        "strategy_params": exp.strategy_params, "risk_config": exp.risk_config, "status": exp.status,
+        "strategy_params": exp.strategy_params, "risk_config": exp.risk_config,
+        "risk_effective": RiskConfig.from_dict((exp.risk_config or {}).get("risk")).to_dict(), "status": exp.status,
         "halted_reason": exp.halted_reason, "competition_group": exp.competition_group,
         "starting_capital": exp.starting_capital, "cash": round(exp.cash, 2), "equity": round(eq, 2),
         "positions_value": round(pv, 2), "realized_pnl": round(realized, 2),

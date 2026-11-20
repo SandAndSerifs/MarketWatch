@@ -83,10 +83,10 @@ class TechSeries:
         high252, low252 = float(h[lo252 : i + 1].max()), float(l[lo252 : i + 1].min())
 
         def cross_up(a: np.ndarray, b: np.ndarray) -> bool:
-            return i >= 1 and not np.isnan(a[i - 1]) and not np.isnan(b[i - 1]) and a[i - 1] <= b[i - 1] and a[i] > b[i]
+            return bool(i >= 1 and not np.isnan(a[i - 1]) and not np.isnan(b[i - 1]) and a[i - 1] <= b[i - 1] and a[i] > b[i])
 
         def cross_down(a: np.ndarray, b: np.ndarray) -> bool:
-            return i >= 1 and not np.isnan(a[i - 1]) and not np.isnan(b[i - 1]) and a[i - 1] >= b[i - 1] and a[i] < b[i]
+            return bool(i >= 1 and not np.isnan(a[i - 1]) and not np.isnan(b[i - 1]) and a[i - 1] >= b[i - 1] and a[i] < b[i])
 
         up, lo_ = self.bb_up[i], self.bb_lo[i]
         prof: dict[str, Any] = {

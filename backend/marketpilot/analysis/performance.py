@@ -40,8 +40,12 @@ def drawdown_stats(values: list[float]) -> dict[str, float]:
             "max_dd_duration_periods": int(mx)}
 
 
+MIN_DAYS_FOR_RATIOS = 20
+
+
 def return_stats(daily_values: list[float], periods_per_year: int = 252) -> dict[str, float | None]:
-    if len(daily_values) < 3:
+    # Annualised ratios from a handful of daily returns are noise; require ~a month of data.
+    if len(daily_values) < MIN_DAYS_FOR_RATIOS + 1:
         return {"sharpe": None, "sortino": None, "volatility_ann_pct": None}
     arr = np.asarray(daily_values, dtype=float)
     rets = arr[1:] / arr[:-1] - 1
@@ -88,14 +92,16 @@ def trade_stats(trades: list[dict[str, Any]]) -> dict[str, Any]:
         "wins": int(len(wins)), "losses": int(len(losses)),
         "win_rate": round(win_rate, 2),
         "win_rate_ci95": [round((centre - half) * 100, 1), round((centre + half) * 100, 1)],
-        "profit_factor": round(float(gross_win / gross_loss), 3) if gross_loss > 0 else (None if gross_win == 0 else float("inf")),
+        "profit_factor": round(float(gross_win / gross_loss), 3) if gross_loss > 0 else None,
+        "profit_factor_note": None if gross_loss > 0 else "undefined: no losing trades yet",
         "expectancy": round(float(pnl.mean()), 2),
         "expectancy_r": round(float(np.mean(rs)), 3) if rs else None,
         "avg_win": round(float(wins.mean()), 2) if len(wins) else None,
         "avg_loss": round(float(losses.mean()), 2) if len(losses) else None,
         "avg_win_r": round(float(np.mean([r for r in rs if r > 0])), 3) if any(r > 0 for r in rs) else None,
         "avg_loss_r": round(float(np.mean([r for r in rs if r <= 0])), 3) if any(r <= 0 for r in rs) else None,
-        "largest_win": round(float(pnl.max()), 2), "largest_loss": round(float(pnl.min()), 2),
+        "largest_win": round(float(wins.max()), 2) if len(wins) else None,
+        "largest_loss": round(float(losses.min()), 2) if len(losses) else None,
         "total_net_pnl": round(float(pnl.sum()), 2),
         "avg_hold_days": round(float(np.mean(holds)), 2) if holds else None,
         "longest_losing_streak": int(longest_loss),

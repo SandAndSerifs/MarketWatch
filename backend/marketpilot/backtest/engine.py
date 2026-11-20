@@ -290,10 +290,6 @@ def segment_metrics(res: BTResult, seg: tuple[date, date], spy: list[Bar]) -> di
     if len(spy_seg) > 1:
         out["benchmark_spy_return_pct"] = round((spy_seg[-1].c / spy_seg[0].c - 1) * 100, 3)
         out["benchmark_spy_max_drawdown_pct"] = drawdown_stats([x.c for x in spy_seg])["max_drawdown_pct"]
-    pf = out.get("profit_factor")
-    if pf == float("inf"):
-        out["profit_factor"] = None
-        out["profit_factor_note"] = "no losing trades"
     # performance by market regime label at entry
     return out
 

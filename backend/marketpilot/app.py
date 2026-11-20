@@ -56,6 +56,17 @@ def create_app(settings: Settings | None = None, runtime: Runtime | None = None)
 
     app = FastAPI(title="MarketPilot API", version="0.1.0", lifespan=lifespan,
                   description="Market intelligence and PAPER trading. No real-money order execution exists in this codebase.")
+    @app.middleware("http")
+    async def _errors_as_json(request: Request, call_next):  # type: ignore[no-untyped-def]
+        # Registered before CORS so it runs *inside* it: unexpected errors still carry CORS
+        # headers and reach the UI as a readable message instead of an opaque CORS failure.
+        try:
+            return await call_next(request)
+        except Exception as exc:  # pragma: no cover - defensive
+            log.exception("unhandled error on %s", request.url.path)
+            return JSONResponse(status_code=500, content={"detail": f"Internal error: {type(exc).__name__}: {exc}"[:500],
+                                                          "code": "internal_error"})
+
     app.add_middleware(CORSMiddleware, allow_origins=settings.cors_origin_list, allow_credentials=False,
                        allow_methods=["*"], allow_headers=["*"])
 

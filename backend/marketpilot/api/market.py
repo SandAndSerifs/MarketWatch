@@ -107,6 +107,14 @@ async def unusual(r: Runtime = Depends(rt)) -> dict[str, Any]:
             if r.md.provider.quality().feed == "iex" else ["Time-of-day adjustment is linear."]}
 
 
+@router.get("/quotes")
+async def quotes(symbols: str, r: Runtime = Depends(rt)) -> dict[str, Any]:
+    syms = sorted({x.strip().upper() for x in symbols.split(",") if x.strip()})[:200]
+    snaps = await r.md.get_snapshots(syms)
+    r.md.watch(syms)
+    return {"quality": r.md.provider.quality().to_dict(), "snapshots": {k: v.to_dict() for k, v in snaps.items()}}
+
+
 @router.get("/quote/{symbol}")
 async def quote(symbol: str, r: Runtime = Depends(rt)) -> dict[str, Any]:
     snaps = await r.md.get_snapshots([symbol.upper()])

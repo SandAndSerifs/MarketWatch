@@ -85,3 +85,15 @@ def test_swing_levels_ignore_unconfirmed_recent_bars():
 def test_profile_requires_history():
     days = trading_days(date(2026, 11, 17), 10)
     assert technical_profile(make_bars(days, [100.0] * 10))["ok"] is False
+
+
+def test_profiles_are_plain_json_serializable():
+    """numpy scalar types must never leak into API responses or stored records."""
+    import json
+
+    from marketpilot.analysis.technicals import market_regime
+
+    days = trading_days(date(2026, 11, 17), 320)
+    bars = make_bars(days, random_walk(days, seed=5))
+    json.dumps(technical_profile(bars))
+    json.dumps(market_regime(bars, {"XLK": bars}))
