@@ -1,0 +1,17 @@
+# Optional: PostgreSQL for an always-on deployment. Then set in backend/.env:
+#   DATABASE_URL=postgresql+psycopg://marketpilot:marketpilot@localhost:5432/marketpilot
+# Change the password before exposing this anywhere beyond localhost.
+services:
+  postgres:
+    image: postgres:16.6
+    environment:
+      POSTGRES_USER: marketpilot
+      POSTGRES_PASSWORD: marketpilot
+      POSTGRES_DB: marketpilot
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - marketpilot_pg:/var/lib/postgresql/data
+    restart: unless-stopped
+volumes:
+  marketpilot_pg:

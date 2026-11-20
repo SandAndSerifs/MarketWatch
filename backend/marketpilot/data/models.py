@@ -30,6 +30,8 @@ class DataQuality:
 
     @property
     def label(self) -> str:
+        if self.provider == "none":
+            return "Not configured"
         if self.realtime and self.feed == "iex":
             return "Real-time (IEX only)"
         if self.realtime:

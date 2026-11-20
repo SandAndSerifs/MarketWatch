@@ -94,6 +94,9 @@ def test_quality_labels_distinguish_feeds():
     assert alp().quality().label == "Real-time (IEX only)"
     assert AlpacaProvider("k", "s", feed="sip").quality().label == "Real-time (consolidated)"
     assert MassiveProvider("k").quality().label == "Delayed 15 min"
+    from marketpilot.data.providers.base import NullProvider
+
+    assert NullProvider().quality().label == "Not configured"
 
 
 @pytest.mark.asyncio
