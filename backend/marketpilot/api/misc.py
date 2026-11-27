@@ -244,6 +244,15 @@ async def brokerage_portfolio() -> dict[str, Any]:
 # ---------------------------------------------------------------- websocket
 @router.websocket("/ws")
 async def ws(websocket: WebSocket) -> None:
+    from ..auth import COOKIE, via_cloudflare
+
+    st = websocket.app.state.runtime.settings
+    if not st.public_mode and via_cloudflare(websocket.headers):
+        await websocket.close(code=4403)
+        return
+    if st.public_mode and not websocket.app.state.sessions.valid(websocket.cookies.get(COOKIE)):
+        await websocket.close(code=4401)
+        return
     await websocket.accept()
     runtime: Runtime = websocket.app.state.runtime
     q = runtime.md.hub.subscribe()

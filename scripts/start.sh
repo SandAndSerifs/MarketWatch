@@ -8,7 +8,9 @@ cd "$ROOT/backend"
 .venv/bin/python -m marketpilot & BACK=$!
 cd "$ROOT/frontend"
 [ -d node_modules ] || npm install
-[ -f .next/BUILD_ID ] || npm run build
+if [ ! -f .next/BUILD_ID ] || [ "$(cat .next/MP_MODE 2>/dev/null || echo local)" != "local" ]; then
+  env -u NEXT_PUBLIC_API_URL npm run build && echo local > .next/MP_MODE
+fi
 npm start & FRONT=$!
 trap 'kill $BACK $FRONT 2>/dev/null' INT TERM EXIT
 echo "MarketPilot: http://localhost:3000  (API http://127.0.0.1:8000/docs)"

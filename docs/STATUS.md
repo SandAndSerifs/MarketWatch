@@ -1,9 +1,11 @@
 # Status, dependencies and known issues
 
-_Last updated: 2026-11-20_
+_Last updated: 2026-11-27_
 
 ## Verified in this environment
-* Backend: 86 automated tests pass on SQLite **and** PostgreSQL.
+* Backend: 91 automated tests pass on SQLite (86 also verified on PostgreSQL before the auth tests were added).
+* Remote access: password login, sessions, rate limiting and the Cloudflare fail-safe are tested; the login flow,
+  sign-out and live WebSocket were verified in a browser through the single-port (same-origin) setup.
 * Frontend: TypeScript strict typecheck and production build pass; `npm audit` reports 0 vulnerabilities.
 * Browser E2E: all 15 routes render with zero console errors against the backend running on labelled fixture data,
   including a real engine-driven paper trade, the Trade Review Q&A and the mobile layout.
@@ -17,6 +19,7 @@ _Last updated: 2026-11-20_
 | Finnhub earnings refresh | No key | Settings → Refresh earnings |
 | Claude analyst / AI trade explanations | No key; loop tested with a fake client | Ask a question in AI Market Analyst |
 | Email / webhook delivery | No SMTP/webhook configured | Trigger an alert with severity ≥ warning |
+| Cloudflare quick/named tunnel | Tunnels must run on your PC; the PowerShell scripts could not be executed here (no PowerShell) | Run `scripts\start-public.ps1` |
 | Robinhood read-only MCP | Requires OAuth token from Robinhood’s agent authorization; handshake not exercised | `GET /api/brokerage/portfolio` after enabling |
 
 ## Dependencies & credentials
@@ -35,7 +38,7 @@ _Last updated: 2026-11-20_
 7. Macro calendar contains only dates verified from official sources on 2026-11-20 (FOMC through Nov 2027; CPI/NFP
    for a few upcoming releases). Add further releases in Settings with their source.
 8. Negative-news detection is a keyword heuristic.
-9. Single-user design without authentication: keep the API on localhost or behind an authenticated proxy.
+9. Single-user password login only (no per-user accounts). For remote access use public mode (docs/CLOUDFLARE.md).
 10. Free-plan WebSocket symbol limit (~30): the stream covers the most relevant symbols; the REST poller covers the rest
     every 15 seconds.
 11. Next.js `next dev` hot-reload websocket may not work behind some proxies/sandboxes; `npm run build && npm start`

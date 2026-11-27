@@ -13,8 +13,9 @@ import tempfile
 from datetime import date, datetime, timedelta, timezone
 
 DB = os.path.join(tempfile.gettempdir(), "marketpilot_e2e.db")
-if os.path.exists(DB):
-    os.remove(DB)
+for suffix in ("", "-wal", "-shm"):
+    if os.path.exists(DB + suffix):
+        os.remove(DB + suffix)
 os.environ.update({"DATABASE_URL": f"sqlite:///{DB}", "RUN_ENGINE": "false", "MARKET_DATA_PROVIDER": "none",
                    "AI_PROVIDER": "none", "MARKETPILOT_ENV": "test"})
 

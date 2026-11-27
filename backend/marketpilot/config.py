@@ -30,6 +30,10 @@ class Settings(BaseSettings):
     cors_origins: str = Field("http://localhost:3000,http://127.0.0.1:3000", alias="CORS_ORIGINS")
     # When false the API serves requests but the autonomous engine/scanner loops do not run.
     run_engine: bool = Field(True, alias="RUN_ENGINE")
+    # Remote access (e.g. Cloudflare Tunnel): requires login with APP_PASSWORD (>= 12 chars).
+    public_mode: bool = Field(False, alias="PUBLIC_MODE")
+    app_password: SecretStr | None = Field(None, alias="APP_PASSWORD")
+    session_secret: SecretStr | None = Field(None, alias="SESSION_SECRET")
 
     # ---- market data -----------------------------------------------------
     market_data_provider: Literal["alpaca", "massive", "none"] = Field("alpaca", alias="MARKET_DATA_PROVIDER")

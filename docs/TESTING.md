@@ -3,7 +3,7 @@
 ## Automated (run on every change)
 
 ```bash
-cd backend && python -m pytest -q                         # 86 tests, ~10 s
+cd backend && python -m pytest -q                         # 91 tests, ~10 s
 MP_TEST_DATABASE_URL=postgresql+psycopg://postgres@localhost:5432/mp_test python -m pytest -q
 cd frontend && npm run typecheck && npm run build
 ```

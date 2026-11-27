@@ -8,7 +8,11 @@ if (-not (Test-Path ".env")) { Copy-Item .env.example .env; Write-Host "Created 
 Start-Process -FilePath ".\.venv\Scripts\python.exe" -ArgumentList "-m","marketpilot" -WorkingDirectory "$root\backend"
 Set-Location "$root\frontend"
 if (-not (Test-Path "node_modules")) { npm install }
-if (-not (Test-Path ".next\BUILD_ID")) { npm run build }
+if (-not (Test-Path ".next\BUILD_ID") -or ((Test-Path ".next\MP_MODE") -and (Get-Content ".next\MP_MODE") -ne "local")) {
+  Remove-Item Env:NEXT_PUBLIC_API_URL -ErrorAction SilentlyContinue
+  npm run build
+  Set-Content -Path ".next\MP_MODE" -Value "local"
+}
 Start-Process -FilePath "npm.cmd" -ArgumentList "start" -WorkingDirectory "$root\frontend"
 Start-Sleep -Seconds 4
 Start-Process "http://localhost:3000"

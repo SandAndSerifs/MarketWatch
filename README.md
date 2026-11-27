@@ -48,6 +48,10 @@ If the backend is not on `http://127.0.0.1:8000`, set `NEXT_PUBLIC_API_URL` (see
 
 Shortcut scripts: `scripts/start.ps1` (Windows) and `scripts/start.sh` (macOS/Linux) start both.
 
+**Use it from anywhere (free):** set `APP_PASSWORD` in `backend/.env`, install `cloudflared`, and run
+`scripts/start-public.ps1` (or `.sh`). It prints a public `https://….trycloudflare.com` address protected by your
+password. Details and the permanent-domain option: [docs/CLOUDFLARE.md](docs/CLOUDFLARE.md).
+
 ### 3. Minimum configuration for real data
 
 | What | Variable(s) in `backend/.env` | Cost |
@@ -87,6 +91,7 @@ Background monitoring and paper trading run in the backend process; the browser 
 
 ## Documentation
 
+* [docs/CLOUDFLARE.md](docs/CLOUDFLARE.md) – making it live on the internet (free Cloudflare Tunnel, password login)
 * [docs/DATA_SOURCES.md](docs/DATA_SOURCES.md) – provider comparison, latency, cost, recommendation
 * [docs/STRATEGY.md](docs/STRATEGY.md) – the proposed initial strategy and its strict risk controls
 * [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) – components, decision pipeline, safety boundaries
@@ -96,7 +101,7 @@ Background monitoring and paper trading run in the backend process; the browser 
 
 ## Tests
 ```bash
-cd backend && pip install -r requirements-dev.txt && python -m pytest -q        # 86 tests (SQLite)
+cd backend && pip install -r requirements-dev.txt && python -m pytest -q        # 91 tests (SQLite)
 MP_TEST_DATABASE_URL=postgresql+psycopg://user@host/db python -m pytest -q      # same suite on PostgreSQL
 cd frontend && npm run typecheck && npm run build
 ```

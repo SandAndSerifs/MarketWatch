@@ -4,8 +4,9 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import {
   Activity, Bell, Bot, BookOpen, ClipboardCheck, FlaskConical, Gauge, History, LayoutDashboard, LineChart, List,
-  Menu, OctagonX, Radar, Settings, Swords, X,
+  LogOut, Menu, OctagonX, Radar, Settings, Swords, X,
 } from "lucide-react";
+import { useAuth } from "./AuthGate";
 import { post } from "@/lib/api";
 import { useApi } from "@/lib/hooks";
 import { useLive } from "@/lib/live";
@@ -69,6 +70,7 @@ function EmergencyStop() {
 
 function TopBar({ onMenu }: { onMenu: () => void }) {
   const { connected, lastAlert } = useLive();
+  const auth = useAuth();
   const { data: status } = useApi<any>("/api/status", 15000);
   const { data: alerts, reload } = useApi<any>("/api/alerts?unread=true&limit=1", 30000);
   const [q, setQ] = useState("");
@@ -107,6 +109,7 @@ function TopBar({ onMenu }: { onMenu: () => void }) {
           {alerts?.unread > 0 && <span className="absolute -top-1.5 -right-2 bg-down text-white rounded-full text-[10px] px-1 num">{alerts.unread}</span>}
         </Link>
         <EmergencyStop />
+        {auth.required && <button onClick={auth.logout} title="Sign out" className="text-mute hover:text-ink"><LogOut className="w-4 h-4" /></button>}
       </div>
     </header>
   );
